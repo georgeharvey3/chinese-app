@@ -17,6 +17,7 @@ import re
 import pickle
 from collections import namedtuple
 import itertools
+import os
 
 import date.date_funcs as date_funcs
 import pickpack.pickle_funcs as pickle_funcs
@@ -137,8 +138,8 @@ class OpenPage(tk.Frame):
         labelhead.grid(row = 1, columnspan = 3, padx = 100, pady = pady_big)
         labelhead.config(height = Header.height, width = Header.width)
             
-        
-        load = Image.open("images/chinesewriting2.jpg")
+        img_path = os.getcwd() + "\\images\\chinesewriting2.jpg"
+        load = Image.open(img_path)
         render = ImageTk.PhotoImage(load)
         img = tk.Label(self, image=render)
         img.image = render
@@ -1279,4 +1280,14 @@ class SettingsPage(tk.Frame):
     
 app = Chinese_app()
 app.iconbitmap('images/zw2ico.ico')
+
+width  = int(app.winfo_screenwidth()/2)
+height = int(app.winfo_screenheight()/1.2)
+w = app.winfo_reqwidth()
+h = app.winfo_reqheight()
+
+x = int((width) - 2*w)
+y = int((height/3) - (h))
+
+app.geometry(f'{width}x{height}+{x}+{y}')
 app.mainloop()
