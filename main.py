@@ -6,6 +6,8 @@ Created on Tue Mar 10 12:54:55 2020
 """
 
 #TODO add traditional scharacter support
+#TODO adjust AddingPage text box size
+#TODO unrecognised word raises messagebox, no error
 
 
 import tkinter as tk
@@ -138,7 +140,7 @@ class OpenPage(tk.Frame):
         labelhead.grid(row = 1, columnspan = 3, padx = 100, pady = pady_big)
         labelhead.config(height = Header.height, width = Header.width)
             
-        img_path = os.getcwd() + "\\images\\chinesewriting2.jpg"
+        img_path = os.getcwd() + "\\chinese_repo\\images\\chinesewriting2.jpg"
         load = Image.open(img_path)
         render = ImageTk.PhotoImage(load)
         img = tk.Label(self, image=render)
@@ -1056,7 +1058,7 @@ class BuildDictPage(tk.Frame):
         exp_label.config(height = TallLabel.height, width = TallLabel.width)
         
 
-        self.char_entry = tk.Entry(self, font = SMALL_FONT, justify = 'center')
+        self.char_entry = tk.Entry(self, font = SMALL_FONT, justify = 'center',)
         self.char_entry.grid(row = 4, columnspan = 4, pady = pady_gen)
         self.char_entry.bind('<Return>', self.enter_chars)
                          
@@ -1171,11 +1173,11 @@ class AddingPage(tk.Frame):
         label1.grid(row = 1, columnspan = 4, padx = padx_big, pady = pady_gen)
         label1.config(height = Header.height, width = Header.width)
 
-        self.T = tk.Text(self, height=15, width=60)
-        self.T.grid(row = 2, columnspan = 4)            
+        self.T = tk.Text(self, height=11, width=60)
+        self.T.grid(row = 3, columnspan = 43)            
             
         done_button = tk.Button(self, text = 'Add', font = SMALL_FONT, command = self.write_bank)
-        done_button.grid(row = 3, column = 1, columnspan = 2, pady = pady_gen)
+        done_button.grid(row = 6, column = 1, columnspan = 2, pady = pady_gen)
         done_button.config(bg = Button.bg, fg = Button.fg)
              
             
@@ -1279,7 +1281,8 @@ class SettingsPage(tk.Frame):
                                  width = SmallLabel.width)
     
 app = Chinese_app()
-app.iconbitmap('images/zw2ico.ico')
+icon_path = os.getcwd() + "\\chinese_repo\\images\\zw2ico.ico"
+app.iconbitmap(icon_path)
 
 width  = int(app.winfo_screenwidth()/2)
 height = int(app.winfo_screenheight()/1.2)
