@@ -55,3 +55,5 @@ def period_checker(file, num_days):
         return 0
 
 
+def datetime_to_str(date):
+    return datetime.strftime(date, '%Y-%m-%d')
