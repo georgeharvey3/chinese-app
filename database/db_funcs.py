@@ -28,7 +28,6 @@ def search_by_char(char, char_set='simp'):
 
 def process_db_return(result):
 
-
     chin, pin, mean = result
     pin_clean = pin[1:-1]
     mean_clean = tuple(mean for mean in mean.split('/') 
@@ -70,6 +69,7 @@ def get_user_words(char_set='simp', bank=1):
 
         return processed
 
+
 def change_user_word_bank(char, char_set='simp'):
     with cursor() as cur:
         sql = (f'''
@@ -81,12 +81,14 @@ def change_user_word_bank(char, char_set='simp'):
 
         cur.execute(sql)
 
+
 def remove_user_word(char, char_set='simp'):
     with cursor() as cur:
         sql = (f'''
                DELETE FROM user_words
                WHERE word_id = (SELECT id FROM words WHERE {char_set} = "{char}")''')
         cur.execute(sql)
+
 
 def ready_counts():
     with cursor() as cur:
@@ -99,6 +101,7 @@ def ready_counts():
         ''')
         cur.execute(sql)
         return cur.fetchone()
+
 
 def show_table(table='user_words'):
     with cursor() as cur:

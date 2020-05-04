@@ -16,13 +16,11 @@ from PIL import Image, ImageTk
 import speech_recognition as sr
 from tkinter import messagebox
 import re
-import pickle
 from collections import namedtuple
 import itertools
 import os
 
 import date.date_funcs as date_funcs
-import pickpack.pickle_funcs as pickle_funcs
 import internet.internet_funcs as internet_funcs
 import translatorpack.translator as translator
 import database.db_funcs as db_funcs
@@ -86,6 +84,9 @@ class TestButton(Button):
 class ImageP:
     height = 10
     width = 30
+
+
+map_char_set = {'Simplified': 'simp', 'Traditional': 'trad'}
 
 
 class ChineseApp(tk.Tk):
@@ -341,8 +342,8 @@ class TestPage(tk.Frame):
         """
         Look up vocabulary list from bank
         """
-
-        word_results = db_funcs.get_user_words(bank=bank)
+        char_set = map_char_set[app.frames[SettingsPage].char_set_var.get()]
+        word_results = db_funcs.get_user_words(char_set=char_set, bank=bank)
         split_results = [(w[0], w[1], (w[2].split('/'))) for w in word_results]
         self.megalist = [TranslatedWord(*result) for result in split_results]
 
@@ -655,7 +656,8 @@ class ShowDictPage(tk.Frame):
         if self.T.get("1.0", 'end-1c'):
             self.T.delete('1.0', 'end')
 
-        self.megalist = [TranslatedWord(*result) for result in db_funcs.get_user_words(bank=bank)]
+        char_set = map_char_set[app.frames[SettingsPage].char_set_var.get()]
+        self.megalist = [TranslatedWord(*result) for result in db_funcs.get_user_words(char_set=char_set, bank=bank)]
 
         count = len(self.megalist)
 
@@ -1039,28 +1041,27 @@ class SettingsPage(tk.Frame):
         self.bind("<<ShowFrame>>", self.on_show_frame)
 
         back_button = tk.Button(self, text='Back', font=SMALL_FONT, command=self.on_back)
-        back_button.grid(row=0, column=0, columnspan=2, padx=padx_sml, pady=pady_gen, sticky='w')
-        back_button.config(bg=Button.bg, fg=Button.fg)
+        back_button.grid(row=0, column=0, padx=padx_sml)
+        back_button.config(bg=Button.bg, fg=Button.fg, width=5)
 
         help_button = tk.Button(self, text='?', font=SMALL_FONT, command=self.show_help)
-        help_button.grid(row=0, column=2, columnspan=2, padx=padx_sml, pady=pady_gen, sticky='e')
-        help_button.config(bg=Button.bg, fg=Button.fg)
+        help_button.grid(row=0, column=3, padx=padx_sml)
+        help_button.config(bg=Button.bg, fg=Button.fg, width=5)
 
         header = tk.Label(self, text='Settings', font=LARGE_FONT, bg=label_beige, fg=labelfont_red)
-        header.grid(row=1, columnspan=4, padx=padx_big, pady=pady_gen)
+        header.grid(row=1, column=1, columnspan=2)
         header.config(height=Header.height, width=Header.width)
 
         q_label = tk.Label(self, text='Number of characters per session: ', font=SMALL_FONT, bg=backg_red,
                            fg=label_beige)
-        q_label.grid(row=2, column=0, padx=padx_big, pady=pady_gen)
-        q_label.config(height=SmallLabel.height,
-                       width=SmallLabel.width)
+        q_label.grid(row=2, column=1)
+        q_label.config(height=SmallLabel.height, width=SmallLabel.width)
 
         self.numq_var = tk.IntVar()
         self.numq_var.set(10)
 
         self.q_count = tk.Entry(self, width=5)
-        self.q_count.grid(row=2, column=1, pady=pady_gen, sticky='w')
+        self.q_count.grid(row=2, column=2)
         self.q_count.insert(0, 10)
 
         self.sound_var = tk.IntVar()
@@ -1069,7 +1070,7 @@ class SettingsPage(tk.Frame):
         self.sound_check = tk.Checkbutton(self, text='Enable sound', font=SMALL_FONT, bg=backg_red, fg=label_beige,
                                           onvalue=1, offvalue=0, variable=self.sound_var, selectcolor=labelfont_red,
                                           activebackground=backg_red, activeforeground=label_beige)
-        self.sound_check.grid(row=3, columnspan=4, padx=padx_big, pady=pady_gen)
+        self.sound_check.grid(row=3, column=1)
         self.sound_check.config(height=SmallLabel.height, width=SmallLabel.width)
 
         self.speak_var = tk.IntVar()
@@ -1079,8 +1080,20 @@ class SettingsPage(tk.Frame):
                                            fg=label_beige, onvalue=1, offvalue=0, variable=self.speak_var,
                                            selectcolor=labelfont_red, activebackground=backg_red,
                                            activeforeground=label_beige)
-        self.speech_check.grid(row=4, columnspan=4, padx=padx_big, pady=pady_gen)
+        self.speech_check.grid(row=4, column=1)
         self.speech_check.config(height=SmallLabel.height, width=SmallLabel.width)
+
+        self.char_set_label = tk.Label(self, text='Choose character set', font=SMALL_FONT, bg=backg_red,
+                                       fg=label_beige)
+        self.char_set_label.grid(row=5, column=1)
+        self.char_set_label.config(height=SmallLabel.height, width=SmallLabel.width)
+
+        self.char_set_var = tk.StringVar()
+        self.char_set_var.set('Simplified')
+
+        self.char_set_option = tk.OptionMenu(self, self.char_set_var, ('Simplified'), ('Traditional'))
+        self.char_set_option.grid(row=5, column=2)
+
 
 
 app = ChineseApp()
