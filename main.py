@@ -5,10 +5,7 @@ Created on Tue Mar 10 12:54:55 2020
 @author: George
 """
 
-# TODO add traditional character support
-# TODO adjust AddingPage text box size
-# TODO unrecognised word raises messagebox, no error
-
+#TODO clean up padding
 
 import tkinter as tk
 import random as rn
@@ -34,10 +31,7 @@ backg_red = '#94212A'
 label_beige = '#D8C3A5'
 labelfont_red = '#6D1A09'
 
-reg_string = '(?:(\ufeff?[\u4e00-\u9fff]{1,4})\s{1}([a-z]{1,6}\d{1}(?:[a-zA-Z]{1,6})?\d?)\s([a-zA-Z-]+(?:\s[a-zA-Z]+)*))'
-regdate_string = '(?:(\ufeff?[\u4e00-\u9fff]{1,4})\s{1}([a-z]{1,6}\d{1}(?:[a-zA-Z]{1,6})?\d?)\s([a-zA-Z-]+(?:\s[a-zA-Z]+)*))\s(\d{4}-\d{2}-\d{2})'
 new_reg = '([\u4e00-\u9fff]{1,4}) \| ([a-z]{1,7}\d(?: [a-z]{1,7}\d?)*) \| ([\(\)\w]+(?: \w*)*(?:\/\w+(?: \w*)*)*)'
-new_reg_date = '([\u4e00-\u9fff]{1,4}) \| ([a-z]{1,7}\d(?: [a-z]{1,7}\d?)*) \| ([\(\)\w]+(?: \w*)*(?:\/\w+(?: \w*)*)*) \| (\d{4}-\d{2}-\d{2})'
 
 TranslatedWord = namedtuple('TranslatedWord', 'character pinyin meaning')
 
@@ -79,6 +73,10 @@ class Button:
 
 class TestButton(Button):
     width = 12
+
+
+class TopButton(Button):
+    width = 5
 
 
 class ImageP:
@@ -173,10 +171,10 @@ class ExpPage(tk.Frame):
 
         back_button = tk.Button(self, text='Back', font=SMALL_FONT, command=lambda: controller.show_frame(OpenPage))
         back_button.grid(row=0, column=0, columnspan=2, padx=padx_sml, pady=pady_gen, sticky='w')
-        back_button.config(bg=Button.bg, fg=Button.fg)
+        back_button.config(bg=Button.bg, fg=Button.fg, width=TopButton.width, height=TopButton.height)
 
-        labelhead = tk.Label(self, text="George's Chinese Game", font=LARGE_FONT, bg=label_beige, bd=3, relief='flat',
-                             fg=labelfont_red)
+        labelhead = tk.Label(self, text="George's Chinese Game", font=LARGE_FONT, bg=Header.bg, bd=3, relief='flat',
+                             fg=Header.fg)
         labelhead.grid(row=1, columnspan=4, padx=padx_big, pady=pady_gen)
         labelhead.config(height=Header.height, width=Header.width)
 
@@ -193,7 +191,7 @@ class ExpPage(tk.Frame):
   
         
                              '''),
-                         font=SMALLEST_FONT, wraplength=900, bg=label_beige, relief='flat', fg=labelfont_red)
+                         font=SMALLEST_FONT, wraplength=900, bg=SmallLabel.bg, relief='flat', fg=SmallLabel.fg)
         label.grid(row=2, rowspan=5, columnspan=4, pady=25, ipadx=10, ipady=10)
         label.config(height=20, width=68)
 
@@ -219,7 +217,7 @@ class StartPage(tk.Frame):
 
         back_button = tk.Button(self, text='Back', font=SMALL_FONT, command=lambda: controller.show_frame(OpenPage))
         back_button.grid(row=0, column=0, columnspan=2, padx=padx_sml, pady=pady_gen, sticky='w')
-        back_button.config(bg=Button.bg, fg=Button.fg)
+        back_button.config(bg=Button.bg, fg=Button.fg, width=TopButton.width, height=TopButton.height)
 
         labelhead = tk.Label(self, text="George's Chinese Game", font=LARGE_FONT, bg=label_beige, bd=3, relief='flat',
                              fg=labelfont_red)
@@ -279,11 +277,11 @@ class TestPage(tk.Frame):
 
         back_button = tk.Button(self, text='Back', font=SMALL_FONT, command=lambda: controller.show_frame(StartPage))
         back_button.grid(row=0, column=0, columnspan=2, padx=padx_sml, pady=pady_gen, sticky='w')
-        back_button.config(bg=Button.bg, fg=Button.fg)
+        back_button.config(bg=Button.bg, fg=Button.fg, width=TopButton.width, height=TopButton.height)
 
         help_button = tk.Button(self, text='?', font=SMALL_FONT, command=self.show_help)
         help_button.grid(row=0, column=2, columnspan=2, padx=padx_sml, pady=pady_gen, sticky='e')
-        help_button.config(bg=Button.bg, fg=Button.fg)
+        help_button.config(bg=Button.bg, fg=Button.fg, width=TopButton.width, height=TopButton.height)
 
         self.label1 = tk.Label(self, textvariable=self.ACs_display, font=LARGE_FONT, bg=label_beige, fg=labelfont_red)
         self.label1.grid(row=1, columnspan=3, padx=padx_big, pady=pady_gen)
@@ -496,13 +494,13 @@ class TestPage(tk.Frame):
                 self.sound_button = tk.Button(self, text='Play Again', font=SMALL_FONT,
                                               command=lambda: translator.speakit(self.ran_tup.character))
                 self.sound_button.grid(row=2, rowspan=2, columnspan=4, pady=pady_gen)
-                self.sound_button.config(height=1, width=button_width, bg=label_beige, fg=labelfont_red)
+                self.sound_button.config(height=Button.height, width=Button.width, bg=Button.bg, fg=Button.fg)
 
         if app.frames[SettingsPage].speak_var.get():
             if self.ACs == 'pinyin':
                 self.speak_button = tk.Button(self, text='Speak', font=SMALL_FONT, command=self.get_audio)
                 self.speak_button.grid(row=6, column=1)
-                self.speak_button.config(height=1, width=8, bg=label_beige, fg=labelfont_red)
+                self.speak_button.config(height=Button.height, width=Button.width, bg=Button.bg, fg=Button.fg)
 
     def test(self, inp):
 
@@ -751,13 +749,13 @@ class ShowDictPage(tk.Frame):
         back_button = tk.Button(self, text='Back', font=SMALL_FONT,
                                 command=lambda: self.controller.show_frame(StartPage))
         back_button.grid(row=0, column=0, columnspan=2, padx=padx_sml, pady=pady_gen, sticky='w')
-        back_button.config(bg=Button.bg, fg=Button.fg)
+        back_button.config(bg=Button.bg, fg=Button.fg, width=TopButton.width, height=TopButton.height)
 
         help_button = tk.Button(self, text='?', font=SMALL_FONT, command=self.show_help)
         help_button.grid(row=0, column=2, columnspan=2, padx=padx_sml, pady=pady_gen, sticky='e')
-        help_button.config(bg=Button.bg, fg=Button.fg)
+        help_button.config(bg=Button.bg, fg=Button.fg, width=TopButton.width, height=TopButton.height)
 
-        label1 = tk.Label(self, text='Your dictionary:', font=LARGE_FONT, bg=label_beige, fg=labelfont_red)
+        label1 = tk.Label(self, text='Your dictionary:', font=LARGE_FONT, bg=Header.bg, fg=Header.fg)
         label1.grid(row=1, columnspan=3, padx=padx_big, pady=pady_gen)
         label1.config(height=Header.height, width=Header.width)
 
@@ -842,9 +840,16 @@ class BuildDictPage(tk.Frame):
 
     def translate_inp(self):
         if internet_funcs.internet_on():
+            error_message = ''
             for word in self.inp1:
-                self.addlist.append(db_funcs.search_by_char(word))
-            self.controller.show_frame(AddingPage)
+                try:
+                    self.addlist.append(db_funcs.search_by_char(word))
+                except ValueError as ex:
+                    error_message += (str(ex) + '\n')
+            if error_message:
+                messagebox.showinfo('Error', error_message)
+            if self.addlist:
+                self.controller.show_frame(AddingPage)
         else:
             messagebox.showinfo('Error',
                                 'You need an internet connection to add to your bank')
@@ -865,19 +870,19 @@ class BuildDictPage(tk.Frame):
 
         back_button = tk.Button(self, text='Back', font=SMALL_FONT, command=lambda: controller.show_frame(StartPage))
         back_button.grid(row=0, column=0, columnspan=2, padx=padx_sml, pady=pady_gen, sticky='w')
-        back_button.config(bg=Button.bg, fg=Button.fg)
+        back_button.config(bg=Button.bg, fg=Button.fg, width=TopButton.width, height=TopButton.height)
 
         help_button = tk.Button(self, text='?', font=SMALL_FONT, command=self.show_help)
         help_button.grid(row=0, column=2, columnspan=2, padx=padx_sml, pady=pady_gen, sticky='e')
-        help_button.config(bg=Button.bg, fg=Button.fg)
+        help_button.config(bg=Button.bg, fg=Button.fg, width=TopButton.width, height=TopButton.height)
 
-        head_label = tk.Label(self, text='Add words to dictionary', font=LARGE_FONT, bg=label_beige, fg=labelfont_red)
+        head_label = tk.Label(self, text='Add words to dictionary', font=LARGE_FONT, bg=Header.bg, fg=Header.fg)
         head_label.grid(row=1, columnspan=4, padx=padx_big, pady=pady_gen)
         head_label.config(height=Header.height, width=Header.width)
 
         self.expvar = tk.StringVar()
 
-        exp_label = tk.Label(self, textvariable=self.expvar, font=SMALL_FONT, bg=backg_red, fg=label_beige)
+        exp_label = tk.Label(self, textvariable=self.expvar, font=SMALL_FONT, bg=SmallLabel.bg, fg=SmallLabel.fg)
         exp_label.grid(row=2, rowspan=2, columnspan=4, padx=padx_big, pady=pady_gen)
         exp_label.config(height=TallLabel.height, width=TallLabel.width)
 
@@ -973,14 +978,14 @@ class AddingPage(tk.Frame):
 
         back_button = tk.Button(self, text='Back', font=SMALL_FONT, command=lambda: controller.show_frame(BuildDictPage))
         back_button.grid(row=0, column=0, columnspan=2, padx=padx_sml, pady=pady_gen, sticky='w')
-        back_button.config(bg=Button.bg, fg=Button.fg)
+        back_button.config(bg=Button.bg, fg=Button.fg, width=TopButton.width, height=TopButton.height)
 
         help_button = tk.Button(self, text='?', font=SMALL_FONT, command=self.show_help)
         help_button.grid(row=0, column=2, columnspan=2, padx=padx_sml, pady=pady_gen, sticky='e')
-        help_button.config(bg=Button.bg, fg=Button.fg)
+        help_button.config(bg=Button.bg, fg=Button.fg, width=TopButton.width, height=TopButton.height)
 
-        label1 = tk.Label(self, text='Adding the following entries...', font=LARGE_FONT, bg=label_beige,
-                          fg=labelfont_red)
+        label1 = tk.Label(self, text='Adding the following entries...', font=LARGE_FONT, bg=Header.bg,
+                          fg=Header.fg)
         label1.grid(row=1, columnspan=4, padx=padx_big, pady=pady_gen)
         label1.config(height=Header.height, width=Header.width)
 
@@ -1042,18 +1047,18 @@ class SettingsPage(tk.Frame):
 
         back_button = tk.Button(self, text='Back', font=SMALL_FONT, command=self.on_back)
         back_button.grid(row=0, column=0, padx=padx_sml)
-        back_button.config(bg=Button.bg, fg=Button.fg, width=5)
+        back_button.config(bg=Button.bg, fg=Button.fg, width=TopButton.width, height=TopButton.height)
 
         help_button = tk.Button(self, text='?', font=SMALL_FONT, command=self.show_help)
         help_button.grid(row=0, column=3, padx=padx_sml)
-        help_button.config(bg=Button.bg, fg=Button.fg, width=5)
+        help_button.config(bg=Button.bg, fg=Button.fg, width=TopButton.width, height=TopButton.height)
 
-        header = tk.Label(self, text='Settings', font=LARGE_FONT, bg=label_beige, fg=labelfont_red)
+        header = tk.Label(self, text='Settings', font=LARGE_FONT, bg=Header.bg, fg=Header.fg)
         header.grid(row=1, column=1, columnspan=2)
         header.config(height=Header.height, width=Header.width)
 
-        q_label = tk.Label(self, text='Number of characters per session: ', font=SMALL_FONT, bg=backg_red,
-                           fg=label_beige)
+        q_label = tk.Label(self, text='Number of characters per session: ', font=SMALL_FONT, bg=SmallLabel.bg,
+                           fg=SmallLabel.fg)
         q_label.grid(row=2, column=1)
         q_label.config(height=SmallLabel.height, width=SmallLabel.width)
 
@@ -1067,24 +1072,24 @@ class SettingsPage(tk.Frame):
         self.sound_var = tk.IntVar()
         self.sound_var.set(0)
 
-        self.sound_check = tk.Checkbutton(self, text='Enable sound', font=SMALL_FONT, bg=backg_red, fg=label_beige,
-                                          onvalue=1, offvalue=0, variable=self.sound_var, selectcolor=labelfont_red,
-                                          activebackground=backg_red, activeforeground=label_beige)
+        self.sound_check = tk.Checkbutton(self, text='Enable sound', font=SMALL_FONT, bg=SmallLabel.bg, fg=SmallLabel.fg,
+                                          onvalue=1, offvalue=0, variable=self.sound_var, selectcolor=SmallLabel.bg,
+                                          activebackground=SmallLabel.bg, activeforeground=SmallLabel.fg)
         self.sound_check.grid(row=3, column=1)
         self.sound_check.config(height=SmallLabel.height, width=SmallLabel.width)
 
         self.speak_var = tk.IntVar()
         self.speak_var.set(0)
 
-        self.speech_check = tk.Checkbutton(self, text='Enable speech recognition', font=SMALL_FONT, bg=backg_red,
-                                           fg=label_beige, onvalue=1, offvalue=0, variable=self.speak_var,
-                                           selectcolor=labelfont_red, activebackground=backg_red,
-                                           activeforeground=label_beige)
+        self.speech_check = tk.Checkbutton(self, text='Enable speech recognition', font=SMALL_FONT, bg=SmallLabel.bg,
+                                           fg=SmallLabel.fg, onvalue=1, offvalue=0, variable=self.speak_var,
+                                           selectcolor=SmallLabel.bg, activebackground=SmallLabel.bg,
+                                           activeforeground=SmallLabel.fg)
         self.speech_check.grid(row=4, column=1)
         self.speech_check.config(height=SmallLabel.height, width=SmallLabel.width)
 
-        self.char_set_label = tk.Label(self, text='Choose character set', font=SMALL_FONT, bg=backg_red,
-                                       fg=label_beige)
+        self.char_set_label = tk.Label(self, text='Choose character set', font=SMALL_FONT, bg=SmallLabel.bg,
+                                       fg=SmallLabel.fg)
         self.char_set_label.grid(row=5, column=1)
         self.char_set_label.config(height=SmallLabel.height, width=SmallLabel.width)
 
