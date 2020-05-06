@@ -5,7 +5,7 @@ Created on Tue Mar 10 12:54:55 2020
 @author: George
 """
 
-#TODO clean up padding
+# TODO clean up padding
 
 import tkinter as tk
 import random as rn
@@ -209,6 +209,9 @@ class StartPage(tk.Frame):
 
         self.controller = controller
 
+        if not db_funcs.check_for_table('user_words'):
+            db_funcs.create_table('user_words')
+
         for i in range(num_rows):
             self.rowconfigure(i, minsize=row_min, weight=1)
 
@@ -321,7 +324,6 @@ class TestPage(tk.Frame):
             self.display_qa()
         else:
             messagebox.showinfo('Alert', "You don't have any entries yet!")
-
     def choose_bank(self):
 
         self.num_qs = app.frames[SettingsPage].numq_var.get()
@@ -508,7 +510,8 @@ class TestPage(tk.Frame):
         Evaluates user entry and displays result
         """
 
-        if inp == self.Ax or (self.ACs == 'meaning' and inp in self.Ax):  # is input correct?
+        if (inp.replace(' ', '') == self.Ax.replace(' ', '') or
+                (self.ACs == 'meaning' and inp.replace(' ', '') in self.Ax.replace(' ', ''))):
             self.result = 'Correct'  # display if correct
             self.perm_list.remove(self.perm)  # remove QA permutation if correct
             if self.perm_list:  # if perm_list has not been exhausted
@@ -1024,7 +1027,7 @@ class SettingsPage(tk.Frame):
         
         Here you can change the amount of characters that you will be tested on per round. This also sets the limit for amount of entries required to play banks 2 and 3
         
-        The sound and speach options require an internet connection
+        The sound and speech options require an internet connection
         
         
                     '''
