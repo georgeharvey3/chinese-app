@@ -1,0 +1,6 @@
+.idea/
+.vscode/
+database/__pycache__
+date/__pycache__
+internet/__pycache__
+translatorpack/__pycache__
