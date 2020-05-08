@@ -9,6 +9,9 @@ from database.mySQL_funcs import create_connection, create_cursor
 
              
 def search_by_char(char, char_set='simp'):
+
+    """Searches word table for entry by given characters"""
+
     with create_cursor(file_path) as cur:
         sql = (f'''
                SELECT 
@@ -28,6 +31,8 @@ def search_by_char(char, char_set='simp'):
 
 def process_db_return(result):
 
+    """Process database entry to send to application"""
+
     chin, pin, mean = result
     pin_clean = pin[1:-1]
     mean_clean = tuple(mean for mean in mean.split('/') 
@@ -38,6 +43,9 @@ def process_db_return(result):
 
 
 def add_to_user_word(char, char_set='simp', bank=1):
+
+    """Add an entry to the user word bank"""
+
     with create_cursor(file_path) as cur:
         sql = (f'''
                INSERT OR IGNORE INTO user_words (word_id, bank, date_added) VALUES (
@@ -52,6 +60,9 @@ def add_to_user_word(char, char_set='simp', bank=1):
 
 
 def get_user_words(char_set='simp', bank=1):
+
+    """Return a list of all words from a given bank"""
+
     with create_cursor(file_path) as cur:
         sql = (f'''
                SELECT
@@ -71,18 +82,24 @@ def get_user_words(char_set='simp', bank=1):
 
 
 def change_user_word_bank(char, char_set='simp'):
+
+    """Moves a word from one bank to the next"""
+
     with create_cursor(file_path) as cur:
-        sql = (f'''
+        sql = (f"""
                UPDATE user_words
                SET 
                bank = bank + 1,
-               date_added = CURDATE()
-               WHERE word_id = (SELECT id FROM words WHERE {char_set} = "{char}")''')
+               date_added = DATE('now')
+               WHERE word_id = (SELECT id FROM words WHERE {char_set} = "{char}")""")
 
         cur.execute(sql)
 
 
 def remove_user_word(char, char_set='simp'):
+
+    """Remove a word from the table"""
+
     with create_cursor(file_path) as cur:
         sql = (f'''
                DELETE FROM user_words
@@ -91,6 +108,9 @@ def remove_user_word(char, char_set='simp'):
 
 
 def ready_counts():
+
+    """Count how many bank 2 and bank 3 words are ready for testing"""
+
     with create_cursor(file_path) as cur:
         sql = (f'''
                 SELECT
@@ -104,6 +124,9 @@ def ready_counts():
 
 
 def show_table(table='user_words'):
+
+    """Display a given table"""
+
     with create_cursor(file_path) as cur:
         sql = (f'''
                SELECT *
@@ -116,6 +139,9 @@ def show_table(table='user_words'):
 
 
 def check_for_table(table='user_words'):
+
+    """Check that a given table exists"""
+
     with create_cursor(file_path) as cur:
         sql = f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table}'"
         cur.execute(sql)
@@ -124,6 +150,9 @@ def check_for_table(table='user_words'):
 
 
 def create_table(name='user_words'):
+
+    """Create a table with a given name"""
+
     with create_cursor(file_path) as cur:
         sql = (f"""CREATE TABLE {name} (
                    id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -136,9 +165,22 @@ def create_table(name='user_words'):
 
 
 def drop_table(name):
+
+    """Remove a table"""
+
     with create_cursor(file_path) as cur:
         sql = f"DROP TABLE {name}"
         cur.execute(sql)
+
+
+def clear_table(name):
+
+    """Clear a table"""
+
+    with create_cursor(file_path) as cur:
+        sql = f"DELETE FROM {name}"
+        cur.execute(sql)
+
 
 if __name__ == '__main__':
     file_path = r"..\data\chinese_dict.db"
