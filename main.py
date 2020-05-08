@@ -5,8 +5,6 @@ Created on Tue Mar 10 12:54:55 2020
 @author: George
 """
 
-# TODO clean up padding
-
 import tkinter as tk
 import random as rn
 from PIL import Image, ImageTk
@@ -22,29 +20,27 @@ import internet.internet_funcs as internet_funcs
 import translatorpack.translator as translator
 import database.db_funcs as db_funcs
 
+
+# Fonts
 SMALLEST_FONT = ("Bahnschrift SemiLight", 8, 'bold')
 SMALL_FONT = ("Bahnschrift SemiLight", 12, 'bold')
 LARGE_FONT = ("Bahnschrift SemiLight", 16, 'bold')
-
 CHINESE_FONT = ("DejaVu Sans Light", 20)
-backg_red = '#94212A'
-label_beige = '#D8C3A5'
-labelfont_red = '#6D1A09'
 
+# Regex for validating dictionary entries
 new_reg = '([\u4e00-\u9fff]{1,4}) \| ([a-z]{1,7}\d(?: [a-z]{1,7}\d?)*) \| ([\(\)\w]+(?: \w*)*(?:\/\w+(?: \w*)*)*)'
 
+# Named tuple for storing words
 TranslatedWord = namedtuple('TranslatedWord', 'character pinyin meaning')
 
+# Layout management
 num_rows = 8
 num_cols = 4
 row_min = 80
-label_width = 38
-button_width = 15
-pady_gen = 20
-pady_big = 30
-padx_sml = 20
-padx_md = 50
-padx_big = 100
+
+
+class Frame:
+    bg = '#94212A'
 
 
 class Header:
@@ -52,16 +48,47 @@ class Header:
     height = 3
     bg = '#D8C3A5'
     fg = '#6D1A09'
+    pad_x = 100
+    pad_y = 30
+    bd = 3
+    relief = 'flat'
+
+
+class QuestionLabel(Header):
+    bg = '#94212A'
+    fg = '#D8C3A5'
+    width = 32
 
 
 class SmallLabel(Header):
     height = 1
     bg = '#94212A'
     fg = '#D8C3A5'
+    pad_y = 15
+
+
+class LongTextLabel(SmallLabel):
+    height = 20
+    width = 68
+    ipad_x = 10
+    ipad_y = 10
 
 
 class TallLabel(Header):
+    bg = '#94212A'
+    fg = '#D8C3A5'
     height = 2
+
+
+class Entry:
+    width = 60
+    height = 11
+    pad_y = 20
+
+
+class SmallEntry(Entry):
+    pad_y = 20
+    ipad_y = 15
 
 
 class Button:
@@ -69,6 +96,12 @@ class Button:
     height = 1
     bg = '#D8C3A5'
     fg = '#6D1A09'
+    pad_x = 0
+    pad_y = 10
+
+
+class BigButton(Button):
+    pad_y = 20
 
 
 class TestButton(Button):
@@ -77,6 +110,8 @@ class TestButton(Button):
 
 class TopButton(Button):
     width = 5
+    pad_x = 20
+    pad_y = 20
 
 
 class ImageP:
@@ -84,6 +119,7 @@ class ImageP:
     width = 30
 
 
+# Maps character options to database columns
 map_char_set = {'Simplified': 'simp', 'Traditional': 'trad'}
 
 
@@ -121,7 +157,7 @@ class OpenPage(tk.Frame):
 
     def __init__(self, parent, controller):
 
-        tk.Frame.__init__(self, parent, bg=backg_red)
+        tk.Frame.__init__(self, parent, bg=Frame.bg)
 
         for i in range(num_rows):
             self.rowconfigure(i, minsize=row_min, weight=1)
@@ -129,9 +165,9 @@ class OpenPage(tk.Frame):
         for i in range(num_cols):
             self.columnconfigure(i, weight=1)
 
-        labelhead = tk.Label(self, text="Welcome to George's Chinese Game.", font=LARGE_FONT, bg=label_beige, bd=3,
-                             relief='flat', fg=backg_red)
-        labelhead.grid(row=1, columnspan=3, padx=100, pady=pady_big)
+        labelhead = tk.Label(self, text="Welcome to George's Chinese Game.", font=LARGE_FONT, bg=Header.bg,
+                             bd=Header.bd, relief=Header.relief, fg=Header.fg)
+        labelhead.grid(row=1, columnspan=3, padx=Header.pad_x, pady=Header.pad_y)
         labelhead.config(height=Header.height, width=Header.width)
 
         if os.getcwd() != os.path.dirname(os.path.abspath(__file__)):
@@ -143,25 +179,25 @@ class OpenPage(tk.Frame):
         render = ImageTk.PhotoImage(load)
         img = tk.Label(self, image=render)
         img.image = render
-        img.grid(row=2, column=1, rowspan=3, columnspan=1, sticky='nsew')
+        img.grid(row=2, column=1, rowspan=3, sticky='nsew')
         img.config(height=ImageP.height, width=ImageP.width)
 
         exp_button = tk.Button(self, text='How it works', font=SMALL_FONT,
                                command=lambda: controller.show_frame(ExpPage))
-        exp_button.grid(row=5, column=1, columnspan=1, pady=pady_big, sticky='n')
-        exp_button.config(height=Button.height, width=Button.width, bg=Button.bg, fg=Button.fg)
+        exp_button.grid(row=5, column=1, pady=BigButton.pad_y, sticky='n')
+        exp_button.config(height=BigButton.height, width=BigButton.width, bg=BigButton.bg, fg=BigButton.fg)
 
         proceed_button = tk.Button(self, text='Proceed', font=SMALL_FONT,
                                    command=lambda: controller.show_frame(StartPage))
-        proceed_button.grid(row=6, column=1, columnspan=1, pady=25, sticky='n')
-        proceed_button.config(height=Button.height, width=Button.width, bg=Button.bg, fg=Button.fg)
+        proceed_button.grid(row=6, column=1, pady=BigButton.pad_y, sticky='n')
+        proceed_button.config(height=BigButton.height, width=BigButton.width, bg=BigButton.bg, fg=BigButton.fg)
 
 
 class ExpPage(tk.Frame):
 
     def __init__(self, parent, controller):
 
-        tk.Frame.__init__(self, parent, bg=backg_red)
+        tk.Frame.__init__(self, parent, bg=Frame.bg)
 
         for i in range(num_rows):
             self.rowconfigure(i, minsize=row_min, weight=1)
@@ -170,12 +206,12 @@ class ExpPage(tk.Frame):
             self.columnconfigure(i, weight=1)
 
         back_button = tk.Button(self, text='Back', font=SMALL_FONT, command=lambda: controller.show_frame(OpenPage))
-        back_button.grid(row=0, column=0, columnspan=2, padx=padx_sml, pady=pady_gen, sticky='w')
-        back_button.config(bg=Button.bg, fg=Button.fg, width=TopButton.width, height=TopButton.height)
+        back_button.grid(row=0, column=0, columnspan=2, padx=TopButton.pad_x, pady=TopButton.pad_y, sticky='w')
+        back_button.config(bg=TopButton.bg, fg=TopButton.fg, width=TopButton.width, height=TopButton.height)
 
-        labelhead = tk.Label(self, text="George's Chinese Game", font=LARGE_FONT, bg=Header.bg, bd=3, relief='flat',
-                             fg=Header.fg)
-        labelhead.grid(row=1, columnspan=4, padx=padx_big, pady=pady_gen)
+        labelhead = tk.Label(self, text="George's Chinese Game", font=LARGE_FONT, bg=Header.bg, bd=Header.bd,
+                             relief=Header.relief, fg=Header.fg)
+        labelhead.grid(row=1, columnspan=4, padx=Header.pad_x, pady=Header.pad_y)
         labelhead.config(height=Header.height, width=Header.width)
 
         label = tk.Label(self, text=('''
@@ -191,13 +227,14 @@ class ExpPage(tk.Frame):
   
         
                              '''),
-                         font=SMALLEST_FONT, wraplength=900, bg=SmallLabel.bg, relief='flat', fg=SmallLabel.fg)
-        label.grid(row=2, rowspan=5, columnspan=4, pady=25, ipadx=10, ipady=10)
-        label.config(height=20, width=68)
+                         font=SMALLEST_FONT, wraplength=500, bg=SmallLabel.bg, fg=SmallLabel.fg)
+        label.grid(row=1, rowspan=5, columnspan=4, ipadx=LongTextLabel.ipad_x,
+                   ipady=LongTextLabel.ipad_y)
+        label.config(height=LongTextLabel.height, width=LongTextLabel.width)
 
         proceed_button = tk.Button(self, text='Proceed', font=SMALL_FONT,
                                    command=lambda: controller.show_frame(StartPage))
-        proceed_button.grid(row=7, column=1, columnspan=2, pady=10)
+        proceed_button.grid(row=5, column=1, columnspan=2, pady=Button.pad_y)
         proceed_button.config(height=Button.height, width=Button.width, bg=Button.bg, fg=Button.fg)
 
 
@@ -205,7 +242,7 @@ class StartPage(tk.Frame):
 
     def __init__(self, parent, controller):
 
-        tk.Frame.__init__(self, parent, bg=backg_red)
+        tk.Frame.__init__(self, parent, bg=Frame.bg)
 
         self.controller = controller
 
@@ -219,46 +256,40 @@ class StartPage(tk.Frame):
             self.columnconfigure(i, weight=1)
 
         back_button = tk.Button(self, text='Back', font=SMALL_FONT, command=lambda: controller.show_frame(OpenPage))
-        back_button.grid(row=0, column=0, columnspan=2, padx=padx_sml, pady=pady_gen, sticky='w')
-        back_button.config(bg=Button.bg, fg=Button.fg, width=TopButton.width, height=TopButton.height)
+        back_button.grid(row=0, column=0, columnspan=2, padx=TopButton.pad_x, pady=TopButton.pad_y, sticky='w')
+        back_button.config(bg=TopButton.bg, fg=TopButton.fg, width=TopButton.width, height=TopButton.height)
 
-        labelhead = tk.Label(self, text="George's Chinese Game", font=LARGE_FONT, bg=label_beige, bd=3, relief='flat',
-                             fg=labelfont_red)
-        labelhead.grid(row=1, columnspan=4, padx=padx_big, pady=pady_gen)
+        labelhead = tk.Label(self, text="George's Chinese Game", font=LARGE_FONT, bg=Header.bg, bd=Header.bd,
+                             relief=Header.relief, fg=Header.fg)
+        labelhead.grid(row=1, columnspan=4, padx=Header.pad_x, pady=Header.pad_y)
         labelhead.config(height=Header.height, width=Header.width)
 
         checkd_button = tk.Button(self, text='Edit dictionary', font=SMALL_FONT,
                                   command=lambda: controller.show_frame(ShowDictPage))
-        checkd_button.grid(row=3, column=1, columnspan=2, pady=10)
+        checkd_button.grid(row=3, column=1, columnspan=2, pady=Button.pad_y)
         checkd_button.config(height=Button.height, width=Button.width, bg=Button.bg, fg=Button.fg)
 
-        buildd_button = tk.Button(self, text='Add to dictionary', font=SMALL_FONT, command=self.open_bdd_page)
-        buildd_button.grid(row=4, column=1, columnspan=2, pady=10)
+        buildd_button = tk.Button(self, text='Add to dictionary', font=SMALL_FONT,
+                                  command=lambda: controller.show_frame(BuildDictPage))
+        buildd_button.grid(row=4, column=1, columnspan=2, pady=Button.pad_y)
         buildd_button.config(height=Button.height, width=Button.width, bg=Button.bg, fg=Button.fg)
 
         self.test_button = tk.Button(self, text='Play Bank 1', font=SMALL_FONT,
                                      command=lambda: controller.show_frame(TestPage))
-        self.test_button.grid(row=5, column=1, columnspan=2, pady=10)
+        self.test_button.grid(row=5, column=1, columnspan=2, pady=Button.pad_y)
         self.test_button.config(height=Button.height, width=Button.width, bg=Button.bg, fg=Button.fg)
 
         settings_button = tk.Button(self, text='Settings', font=SMALL_FONT,
                                     command=lambda: controller.show_frame(SettingsPage))
-        settings_button.grid(row=6, column=1, columnspan=2, pady=10)
+        settings_button.grid(row=6, column=1, columnspan=2, pady=Button.pad_y)
         settings_button.config(height=Button.height, width=Button.width, bg=Button.bg, fg=Button.fg)
-
-    def open_bdd_page(self):
-        if internet_funcs.internet_on():
-            self.controller.show_frame(BuildDictPage)
-        else:
-            messagebox.showinfo('Error',
-                                'You need an internet connection to add entries')
 
 
 class TestPage(tk.Frame):
 
     def __init__(self, parent, controller):
 
-        tk.Frame.__init__(self, parent, bg=backg_red)
+        tk.Frame.__init__(self, parent, bg=Frame.bg)
 
         for i in range(num_rows):
             self.rowconfigure(i, minsize=row_min, weight=1)
@@ -279,37 +310,38 @@ class TestPage(tk.Frame):
         self.Qx_display = tk.StringVar()  # initialise variable question string
 
         back_button = tk.Button(self, text='Back', font=SMALL_FONT, command=lambda: controller.show_frame(StartPage))
-        back_button.grid(row=0, column=0, columnspan=2, padx=padx_sml, pady=pady_gen, sticky='w')
-        back_button.config(bg=Button.bg, fg=Button.fg, width=TopButton.width, height=TopButton.height)
+        back_button.grid(row=0, column=0, columnspan=2, padx=TopButton.pad_x, pady=TopButton.pad_y, sticky='w')
+        back_button.config(bg=TopButton.bg, fg=TopButton.fg, width=TopButton.width, height=TopButton.height)
 
         help_button = tk.Button(self, text='?', font=SMALL_FONT, command=self.show_help)
-        help_button.grid(row=0, column=2, columnspan=2, padx=padx_sml, pady=pady_gen, sticky='e')
-        help_button.config(bg=Button.bg, fg=Button.fg, width=TopButton.width, height=TopButton.height)
+        help_button.grid(row=0, column=2, columnspan=2, padx=TopButton.pad_x, pady=TopButton.pad_y, sticky='e')
+        help_button.config(bg=TopButton.bg, fg=TopButton.fg, width=TopButton.width, height=TopButton.height)
 
-        self.label1 = tk.Label(self, textvariable=self.ACs_display, font=LARGE_FONT, bg=label_beige, fg=labelfont_red)
-        self.label1.grid(row=1, columnspan=3, padx=padx_big, pady=pady_gen)
+        self.label1 = tk.Label(self, textvariable=self.ACs_display, font=LARGE_FONT, bg=Header.bg, fg=Header.fg)
+        self.label1.grid(row=1, columnspan=3, padx=Header.pad_x, pady=Header.pad_y)
         self.label1.config(height=Header.height, width=Header.width)
 
-        self.q_label = tk.Label(self, textvariable=self.Qx_display, font=CHINESE_FONT, bg=backg_red, fg=label_beige)
-        self.q_label.grid(row=2, rowspan=2, columnspan=3, pady=pady_gen)
-        self.q_label.config(height=Header.height, width=32)
+        self.q_label = tk.Label(self, textvariable=self.Qx_display, font=CHINESE_FONT, bg=QuestionLabel.bg,
+                                fg=QuestionLabel.fg)
+        self.q_label.grid(row=2, rowspan=2, columnspan=3, pady=QuestionLabel.pad_y)
+        self.q_label.config(height=QuestionLabel.height, width=QuestionLabel.width)
 
         self.q_label.bind("<Button-1>", self.hint)
 
-        res_label = tk.Label(self, textvariable=self.result_var, font=SMALL_FONT, bg=backg_red, fg=label_beige)
-        res_label.grid(row=4, columnspan=3, pady=pady_gen)
+        res_label = tk.Label(self, textvariable=self.result_var, font=SMALL_FONT, bg=SmallLabel.bg, fg=SmallLabel.fg)
+        res_label.grid(row=4, columnspan=3, pady=SmallLabel.pad_y)
 
         self.entry = tk.Entry(self, font=SMALL_FONT, justify='center')
         self.entry.focus_set()
         self.entry.bind('<Return>', self.return_entry)
-        self.entry.grid(row=5, columnspan=3, pady=pady_gen, ipady=15)
+        self.entry.grid(row=5, columnspan=3, pady=SmallEntry.pad_y, ipady=SmallEntry.ipad_y)
 
         self.idk_button = tk.Button(self, text="I don't know", font=SMALL_FONT, command=self.idk)
-        self.idk_button.grid(row=6, column=0, pady=pady_gen, sticky='e')
+        self.idk_button.grid(row=6, column=0, pady=TestButton.pad_y, sticky='e')
         self.idk_button.config(height=TestButton.height, width=TestButton.width, bg=TestButton.bg, fg=TestButton.fg)
 
         eliminate_button = tk.Button(self, text="Eliminate", font=SMALL_FONT, command=self.remove_char)
-        eliminate_button.grid(row=6, column=2, pady=pady_gen, sticky='w')
+        eliminate_button.grid(row=6, column=2, pady=TestButton.pad_y, sticky='w')
         eliminate_button.config(height=TestButton.height, width=TestButton.width, bg=TestButton.bg, fg=TestButton.fg)
 
     def on_show_frame(self, _):
@@ -324,7 +356,10 @@ class TestPage(tk.Frame):
             self.display_qa()
         else:
             messagebox.showinfo('Alert', "You don't have any entries yet!")
+
     def choose_bank(self):
+
+        """Choose bank if enough entries meet time elapsed requirement"""
 
         self.num_qs = app.frames[SettingsPage].numq_var.get()
 
@@ -433,9 +468,9 @@ class TestPage(tk.Frame):
 
     def display_qa(self):
 
-        '''
+        """
         Updates display with question and answer selection
-        '''
+        """
 
         if self.sound_button is not None:
             self.sound_button.grid_remove()
@@ -463,7 +498,7 @@ class TestPage(tk.Frame):
 
     def get_audio(self):
 
-        # Captures voice and converts to pinyin
+        """Captures voice and converts to pinyin"""
 
         r = sr.Recognizer()
         with sr.Microphone() as source:
@@ -495,7 +530,7 @@ class TestPage(tk.Frame):
                 translator.speakit(self.ran_tup.character)
                 self.sound_button = tk.Button(self, text='Play Again', font=SMALL_FONT,
                                               command=lambda: translator.speakit(self.ran_tup.character))
-                self.sound_button.grid(row=2, rowspan=2, columnspan=4, pady=pady_gen)
+                self.sound_button.grid(row=2, rowspan=2, columnspan=4, pady=Button.pad_y)
                 self.sound_button.config(height=Button.height, width=Button.width, bg=Button.bg, fg=Button.fg)
 
         if app.frames[SettingsPage].speak_var.get():
@@ -510,8 +545,8 @@ class TestPage(tk.Frame):
         Evaluates user entry and displays result
         """
 
-        if (inp.replace(' ', '') == self.Ax.replace(' ', '') or
-                (self.ACs == 'meaning' and inp.replace(' ', '') in self.Ax.replace(' ', ''))):
+        if (self.ACs == 'pinyin' and inp.replace(' ', '') == self.Ax.replace(' ', '') or
+                self.ACs == 'meaning' and inp in self.Ax):
             self.result = 'Correct'  # display if correct
             self.perm_list.remove(self.perm)  # remove QA permutation if correct
             if self.perm_list:  # if perm_list has not been exhausted
@@ -606,10 +641,16 @@ class TestPage(tk.Frame):
         else:
             db_funcs.change_user_word_bank(self.ran_tup.character)
 
+        if self.perm_list:
+            self.assign_qa()
+            self.display_qa()
+        else:
+            self.controller.show_frame[StartPage]
+
     def hint(self, event):
 
         """
-        Generates a hint
+        Generates a hint based on individual character meaning (requires internet connection)
         """
 
         chars = [i for i in self.Qx]
@@ -630,6 +671,8 @@ class TestPage(tk.Frame):
 
     def show_help(self):
 
+        """Displays explanation of current page"""
+
         message = '''
         
         Try to answer the question and hit Enter once you have typed the answer
@@ -647,6 +690,10 @@ class TestPage(tk.Frame):
 
 class ShowDictPage(tk.Frame):
 
+    def on_show_frame(self, _):
+        self.temp_bank_contents = {}
+        self.rw_data()
+
     def rw_data(self, bank=1):
 
         """
@@ -657,29 +704,25 @@ class ShowDictPage(tk.Frame):
         if self.T.get("1.0", 'end-1c'):
             self.T.delete('1.0', 'end')
 
-        char_set = map_char_set[app.frames[SettingsPage].char_set_var.get()]
-        self.megalist = [TranslatedWord(*result) for result in db_funcs.get_user_words(char_set=char_set, bank=bank)]
+        if self.temp_bank_contents.get(bank, None) is None:
+            char_set = map_char_set[app.frames[SettingsPage].char_set_var.get()]
+            display_list = [TranslatedWord(*result) for result in db_funcs.get_user_words(char_set=char_set, bank=bank)]
+        else:
+            display_list = self.temp_bank_contents[bank]
 
-        count = len(self.megalist)
+        count = len(display_list)
 
-        for tup in self.megalist:
-            vals = tup.character, tup.pinyin, tup.meaning
+        for tup in display_list:
+            meaning = '/'.join(tup.meaning) if isinstance(tup.meaning, tuple) else tup.meaning
+            vals = tup.character, tup.pinyin, meaning
             self.T.insert(tk.END, (' | '.join(vals) + '\n'))
 
         self.num.set('Number of entries: %d' % count)
 
-        return self.megalist
+    def text_to_list(self, list):
 
-    def on_show_frame(self, event):
-        self.rw_data()
+        """Reads entries from text box and adds word objects to list"""
 
-    def write_bank(self, bank):
-
-        """
-        Updates bank with user entry
-        """
-
-        # choose regex based on whether entries hold date info
         lineRegex = re.compile(new_reg)
 
         block = self.T.get("1.0", 'end-1c')
@@ -695,8 +738,6 @@ class ShowDictPage(tk.Frame):
                 messagebox.showinfo('Error', message)
                 state = False  # invalid line format found: do not update megalist
 
-        self.megalist = []
-
         # only perform if regex found no invalid entries
         if state:
             self.inp = self.T.get("1.0", 'end-1c')
@@ -711,14 +752,45 @@ class ShowDictPage(tk.Frame):
                     mean = tuple(mean.split('/'))
 
                     translated_char = TranslatedWord(char, pin, mean)
-                    self.megalist.append(translated_char)
+                    list.append(translated_char)
 
-                for word in self.megalist:
-                    db_funcs.add_to_user_word(word.character, bank=self.bank_showing)
+    def switch_bank(self, from_bank, to_bank):
 
-            self.controller.show_frame(StartPage)
+        """Switches display bank"""
+
+        temp_megalist = []
+
+        self.text_to_list(temp_megalist)
+
+        self.temp_bank_contents[from_bank] = temp_megalist
+        print(self.temp_bank_contents)
+
+        self.rw_data(bank=to_bank)
+
+    def write_bank(self, bank):
+
+        """
+        Updates bank with user entry
+        """
+
+        db_funcs.clear_table('user_words')
+
+        current_bank_list = []
+        self.text_to_list(current_bank_list)
+
+        for key, value in self.temp_bank_contents.items():
+            if key != self.bank_showing:
+                for word in value:
+                    db_funcs.add_to_user_word(word.character, bank=key)
+            else:
+                for word in current_bank_list:
+                    db_funcs.add_to_user_word(word.character, bank=key)
+
+        self.controller.show_frame(StartPage)
 
     def show_help(self):
+
+        """Displays explanation of current page"""
 
         message = '''
         
@@ -735,7 +807,7 @@ class ShowDictPage(tk.Frame):
 
     def __init__(self, parent, controller):
 
-        tk.Frame.__init__(self, parent, bg=backg_red)
+        tk.Frame.__init__(self, parent, bg=Frame.bg)
 
         for i in range(num_rows):
             self.rowconfigure(i, minsize=row_min, weight=1)
@@ -751,39 +823,42 @@ class ShowDictPage(tk.Frame):
 
         back_button = tk.Button(self, text='Back', font=SMALL_FONT,
                                 command=lambda: self.controller.show_frame(StartPage))
-        back_button.grid(row=0, column=0, columnspan=2, padx=padx_sml, pady=pady_gen, sticky='w')
-        back_button.config(bg=Button.bg, fg=Button.fg, width=TopButton.width, height=TopButton.height)
+        back_button.grid(row=0, column=0, columnspan=2, padx=TopButton.pad_x, pady=TopButton.pad_y, sticky='w')
+        back_button.config(bg=TopButton.bg, fg=TopButton.fg, width=TopButton.width, height=TopButton.height)
 
         help_button = tk.Button(self, text='?', font=SMALL_FONT, command=self.show_help)
-        help_button.grid(row=0, column=2, columnspan=2, padx=padx_sml, pady=pady_gen, sticky='e')
-        help_button.config(bg=Button.bg, fg=Button.fg, width=TopButton.width, height=TopButton.height)
+        help_button.grid(row=0, column=2, columnspan=2, padx=TopButton.pad_x, pady=TopButton.pad_y, sticky='e')
+        help_button.config(bg=TopButton.bg, fg=TopButton.fg, width=TopButton.width, height=TopButton.height)
 
         label1 = tk.Label(self, text='Your dictionary:', font=LARGE_FONT, bg=Header.bg, fg=Header.fg)
-        label1.grid(row=1, columnspan=3, padx=padx_big, pady=pady_gen)
+        label1.grid(row=1, columnspan=3, padx=Header.pad_x, pady=Header.pad_y)
         label1.config(height=Header.height, width=Header.width)
 
-        button1 = tk.Button(self, text='1', font=SMALL_FONT, command=lambda: self.rw_data(bank=1))
-        button1.grid(row=2, column=0, columnspan=1, padx=padx_sml, pady=pady_gen, sticky='e')
+        button1 = tk.Button(self, text='1', font=SMALL_FONT,
+                            command=lambda: self.switch_bank(from_bank=self.bank_showing, to_bank=1))
+        button1.grid(row=2, column=0, columnspan=1, padx=Button.pad_x, pady=Button.pad_y, sticky='e')
         button1.config(bg=Button.bg, fg=Button.fg)
 
-        button2 = tk.Button(self, text='2', font=SMALL_FONT, command=lambda: self.rw_data(bank=2))
-        button2.grid(row=2, column=1, columnspan=1, padx=padx_sml, pady=pady_gen)
+        button2 = tk.Button(self, text='2', font=SMALL_FONT,
+                            command=lambda: self.switch_bank(from_bank=self.bank_showing, to_bank=2))
+        button2.grid(row=2, column=1, columnspan=1, padx=Button.pad_x, pady=Button.pad_y)
         button2.config(bg=Button.bg, fg=Button.fg)
 
-        button3 = tk.Button(self, text='3', font=SMALL_FONT, command=lambda: self.rw_data(bank=3))
-        button3.grid(row=2, column=2, columnspan=1, padx=padx_sml, pady=pady_gen, sticky='w')
+        button3 = tk.Button(self, text='3', font=SMALL_FONT,
+                            command=lambda: self.switch_bank(from_bank=self.bank_showing, to_bank=3))
+        button3.grid(row=2, column=2, columnspan=1, padx=Button.pad_x, pady=Button.pad_y, sticky='w')
         button3.config(bg=Button.bg, fg=Button.fg)
 
         char_count = tk.Label(self, textvariable=self.num, font=SMALL_FONT)
-        char_count.grid(row=3, column=0, columnspan=3, padx=padx_sml, pady=pady_gen, sticky='n')
+        char_count.grid(row=3, column=0, columnspan=3, padx=SmallLabel.pad_x, pady=SmallLabel.pad_y, sticky='n')
         char_count.config(bg=SmallLabel.bg, fg=SmallLabel.fg)
 
-        self.T = tk.Text(self, height=11, width=60)
+        self.T = tk.Text(self, height=Entry.height, width=Entry.width)
         self.T.grid(row=3, rowspan=3, columnspan=3)
 
         done_button = tk.Button(self, text='Done', font=SMALL_FONT,
                                 command=lambda: (self.write_bank(self.bank_showing)))
-        done_button.grid(row=6, column=1, pady=pady_gen)
+        done_button.grid(row=6, column=1, pady=Button.pad_y)
         done_button.config(bg=Button.bg, fg=Button.fg)
 
 
@@ -799,7 +874,7 @@ class BuildDictPage(tk.Frame):
 
     def enter_chars(self, en):
 
-        # Sends added words to next page
+        """Sends added words to next page"""
 
         self.inp1 = self.char_entry.get()
         self.char_entry.delete(0, 'end')
@@ -808,14 +883,10 @@ class BuildDictPage(tk.Frame):
 
         if re.findall(chinRegex, self.inp1):
             messagebox.showinfo('Error', 'Enter only Chinese characters.')
-
         elif len(self.inp1) > 4 and ' ' not in self.inp1:
             messagebox.showinfo('Error', 'Enter spaces between words.')
-
         elif self.inp1 == '':
             messagebox.showinfo('Error', 'You have not entered any characters.')
-
-
         else:
             self.inp1 = list(self.inp1.split(' '))
 
@@ -825,6 +896,8 @@ class BuildDictPage(tk.Frame):
             self.done_button.config(bg=Button.bg, fg=Button.fg)
 
     def show_help(self):
+
+        """Displays explanation of current page"""
 
         message = '''
         
@@ -842,6 +915,9 @@ class BuildDictPage(tk.Frame):
         tk.messagebox.showinfo('Help', message)
 
     def translate_inp(self):
+
+        """Obtains translations for entered words"""
+
         if internet_funcs.internet_on():
             error_message = ''
             for word in self.inp1:
@@ -859,7 +935,7 @@ class BuildDictPage(tk.Frame):
 
     def __init__(self, parent, controller):
 
-        tk.Frame.__init__(self, parent, bg=backg_red)
+        tk.Frame.__init__(self, parent, bg=Frame.bg)
 
         for i in range(num_rows):
             self.rowconfigure(i, minsize=row_min, weight=1)
@@ -872,25 +948,25 @@ class BuildDictPage(tk.Frame):
         self.bind("<<ShowFrame>>", self.on_show_frame)
 
         back_button = tk.Button(self, text='Back', font=SMALL_FONT, command=lambda: controller.show_frame(StartPage))
-        back_button.grid(row=0, column=0, columnspan=2, padx=padx_sml, pady=pady_gen, sticky='w')
-        back_button.config(bg=Button.bg, fg=Button.fg, width=TopButton.width, height=TopButton.height)
+        back_button.grid(row=0, column=0, columnspan=2, padx=TopButton.pad_x, pady=TopButton.pad_y, sticky='w')
+        back_button.config(bg=TopButton.bg, fg=TopButton.fg, width=TopButton.width, height=TopButton.height)
 
         help_button = tk.Button(self, text='?', font=SMALL_FONT, command=self.show_help)
-        help_button.grid(row=0, column=2, columnspan=2, padx=padx_sml, pady=pady_gen, sticky='e')
-        help_button.config(bg=Button.bg, fg=Button.fg, width=TopButton.width, height=TopButton.height)
+        help_button.grid(row=0, column=2, columnspan=2, padx=TopButton.pad_x, pady=TopButton.pad_y, sticky='e')
+        help_button.config(bg=TopButton.bg, fg=TopButton.fg, width=TopButton.width, height=TopButton.height)
 
         head_label = tk.Label(self, text='Add words to dictionary', font=LARGE_FONT, bg=Header.bg, fg=Header.fg)
-        head_label.grid(row=1, columnspan=4, padx=padx_big, pady=pady_gen)
+        head_label.grid(row=1, columnspan=4, padx=Header.pad_x, pady=Header.pad_y)
         head_label.config(height=Header.height, width=Header.width)
 
         self.expvar = tk.StringVar()
 
-        exp_label = tk.Label(self, textvariable=self.expvar, font=SMALL_FONT, bg=SmallLabel.bg, fg=SmallLabel.fg)
-        exp_label.grid(row=2, rowspan=2, columnspan=4, padx=padx_big, pady=pady_gen)
+        exp_label = tk.Label(self, textvariable=self.expvar, font=SMALL_FONT, bg=TallLabel.bg, fg=TallLabel.fg)
+        exp_label.grid(row=2, rowspan=2, columnspan=4, padx=TallLabel.pad_x, pady=TallLabel.pad_y)
         exp_label.config(height=TallLabel.height, width=TallLabel.width)
 
         self.char_entry = tk.Entry(self, font=SMALL_FONT, justify='center')
-        self.char_entry.grid(row=4, columnspan=4, pady=pady_gen)
+        self.char_entry.grid(row=4, columnspan=4, pady=Entry.pad_y)
         self.char_entry.bind('<Return>', self.enter_chars)
 
         self.done_button = tk.Button(self, text='Next', font=SMALL_FONT, command=self.translate_inp)
@@ -900,7 +976,7 @@ class AddingPage(tk.Frame):
 
     def write_data(self):
 
-        # Display previously entered words with translation
+        """Display previously entered words with translation"""
 
         for tup in app.frames[BuildDictPage].addlist:
             add = (' | '.join(tup) + '\n')
@@ -914,7 +990,7 @@ class AddingPage(tk.Frame):
 
     def write_bank(self):
 
-        # Commit words to bank
+        """Commit user entries to database"""
 
         self.megalist = []
 
@@ -955,6 +1031,8 @@ class AddingPage(tk.Frame):
 
     def show_help(self):
 
+        """Displays explanation of current page"""
+
         message = '''
         
         Verify that the translations are as expected and then press Done to add
@@ -967,7 +1045,7 @@ class AddingPage(tk.Frame):
 
     def __init__(self, parent, controller):
 
-        tk.Frame.__init__(self, parent, bg=backg_red)
+        tk.Frame.__init__(self, parent, bg=Frame.bg)
 
         for i in range(num_rows):
             self.rowconfigure(i, minsize=row_min, weight=1)
@@ -979,30 +1057,34 @@ class AddingPage(tk.Frame):
 
         self.bind("<<ShowFrame>>", self.on_show_frame)
 
-        back_button = tk.Button(self, text='Back', font=SMALL_FONT, command=lambda: controller.show_frame(BuildDictPage))
-        back_button.grid(row=0, column=0, columnspan=2, padx=padx_sml, pady=pady_gen, sticky='w')
-        back_button.config(bg=Button.bg, fg=Button.fg, width=TopButton.width, height=TopButton.height)
+        back_button = tk.Button(self, text='Back', font=SMALL_FONT,
+                                command=lambda: controller.show_frame(BuildDictPage))
+        back_button.grid(row=0, column=0, columnspan=2, padx=TopButton.pad_x, pady=TopButton.pad_y, sticky='w')
+        back_button.config(bg=TopButton.bg, fg=TopButton.fg, width=TopButton.width, height=TopButton.height)
 
         help_button = tk.Button(self, text='?', font=SMALL_FONT, command=self.show_help)
-        help_button.grid(row=0, column=2, columnspan=2, padx=padx_sml, pady=pady_gen, sticky='e')
-        help_button.config(bg=Button.bg, fg=Button.fg, width=TopButton.width, height=TopButton.height)
+        help_button.grid(row=0, column=2, columnspan=2, padx=TopButton.pad_x, pady=TopButton.pad_y, sticky='e')
+        help_button.config(bg=TopButton.bg, fg=TopButton.fg, width=TopButton.width, height=TopButton.height)
 
         label1 = tk.Label(self, text='Adding the following entries...', font=LARGE_FONT, bg=Header.bg,
                           fg=Header.fg)
-        label1.grid(row=1, columnspan=4, padx=padx_big, pady=pady_gen)
+        label1.grid(row=1, columnspan=4, padx=Header.pad_x, pady=Header.pad_y)
         label1.config(height=Header.height, width=Header.width)
 
-        self.T = tk.Text(self, height=15, width=60)
+        self.T = tk.Text(self, height=Entry.height, width=Entry.width)
         self.T.grid(row=2, rowspan=4, columnspan=4)
 
         done_button = tk.Button(self, text='Add', font=SMALL_FONT, command=self.write_bank)
-        done_button.grid(row=6, column=1, columnspan=2, pady=pady_gen)
+        done_button.grid(row=6, column=1, columnspan=2, pady=Button.pad_y)
         done_button.config(bg=Button.bg, fg=Button.fg)
 
 
 class SettingsPage(tk.Frame):
 
     def on_back(self):
+
+        """Verifies question count input is valid"""
+
         if self.q_count.get().isdecimal():
             if int(self.q_count.get()) < 21:
                 self.numq_var.set(self.q_count.get())
@@ -1012,7 +1094,7 @@ class SettingsPage(tk.Frame):
         else:
             messagebox.showinfo('Error', 'Entry must be a number.')
 
-    def on_show_frame(self, event):
+    def on_show_frame(self, _):
 
         if internet_funcs.internet_on():
             self.sound_check.configure(state='active')
@@ -1022,6 +1104,8 @@ class SettingsPage(tk.Frame):
             self.speech_check.configure(state='disabled')
 
     def show_help(self):
+
+        """Displays explanation of current page"""
 
         message = '''
         
@@ -1036,7 +1120,7 @@ class SettingsPage(tk.Frame):
 
     def __init__(self, parent, controller):
 
-        tk.Frame.__init__(self, parent, bg=backg_red)
+        tk.Frame.__init__(self, parent, bg=Frame.bg)
 
         for i in range(num_rows):
             self.rowconfigure(i, minsize=row_min, weight=1)
@@ -1049,15 +1133,15 @@ class SettingsPage(tk.Frame):
         self.bind("<<ShowFrame>>", self.on_show_frame)
 
         back_button = tk.Button(self, text='Back', font=SMALL_FONT, command=self.on_back)
-        back_button.grid(row=0, column=0, padx=padx_sml)
-        back_button.config(bg=Button.bg, fg=Button.fg, width=TopButton.width, height=TopButton.height)
+        back_button.grid(row=0, column=0, padx=TopButton.pad_x)
+        back_button.config(bg=TopButton.bg, fg=TopButton.fg, width=TopButton.width, height=TopButton.height)
 
         help_button = tk.Button(self, text='?', font=SMALL_FONT, command=self.show_help)
-        help_button.grid(row=0, column=3, padx=padx_sml)
-        help_button.config(bg=Button.bg, fg=Button.fg, width=TopButton.width, height=TopButton.height)
+        help_button.grid(row=0, column=3, padx=TopButton.pad_x)
+        help_button.config(bg=TopButton.bg, fg=TopButton.fg, width=TopButton.width, height=TopButton.height)
 
         header = tk.Label(self, text='Settings', font=LARGE_FONT, bg=Header.bg, fg=Header.fg)
-        header.grid(row=1, column=1, columnspan=2)
+        header.grid(row=1, column=1, columnspan=2, pady=Header.pad_y)
         header.config(height=Header.height, width=Header.width)
 
         q_label = tk.Label(self, text='Number of characters per session: ', font=SMALL_FONT, bg=SmallLabel.bg,
@@ -1075,7 +1159,8 @@ class SettingsPage(tk.Frame):
         self.sound_var = tk.IntVar()
         self.sound_var.set(0)
 
-        self.sound_check = tk.Checkbutton(self, text='Enable sound', font=SMALL_FONT, bg=SmallLabel.bg, fg=SmallLabel.fg,
+        self.sound_check = tk.Checkbutton(self, text='Enable sound', font=SMALL_FONT, bg=SmallLabel.bg,
+                                          fg=SmallLabel.fg,
                                           onvalue=1, offvalue=0, variable=self.sound_var, selectcolor=SmallLabel.bg,
                                           activebackground=SmallLabel.bg, activeforeground=SmallLabel.fg)
         self.sound_check.grid(row=3, column=1)
@@ -1099,9 +1184,8 @@ class SettingsPage(tk.Frame):
         self.char_set_var = tk.StringVar()
         self.char_set_var.set('Simplified')
 
-        self.char_set_option = tk.OptionMenu(self, self.char_set_var, ('Simplified'), ('Traditional'))
+        self.char_set_option = tk.OptionMenu(self, self.char_set_var, 'Simplified', 'Traditional')
         self.char_set_option.grid(row=5, column=2)
-
 
 
 app = ChineseApp()
