@@ -128,7 +128,7 @@ class ChineseApp(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
 
-        tk.Tk.wm_title(self, "George's Chinese Game")
+        tk.Tk.wm_title(self, "HanLearn")
 
         container = tk.Frame(self)
         container.grid(sticky='nsew')
@@ -165,7 +165,7 @@ class OpenPage(tk.Frame):
         for i in range(num_cols):
             self.columnconfigure(i, weight=1)
 
-        labelhead = tk.Label(self, text="Welcome to George's Chinese Game.", font=LARGE_FONT, bg=Header.bg,
+        labelhead = tk.Label(self, text="Welcome to HanLearn.", font=LARGE_FONT, bg=Header.bg,
                              bd=Header.bd, relief=Header.relief, fg=Header.fg)
         labelhead.grid(row=1, columnspan=3, padx=Header.pad_x, pady=Header.pad_y)
         labelhead.config(height=Header.height, width=Header.width)
@@ -209,7 +209,7 @@ class ExpPage(tk.Frame):
         back_button.grid(row=0, column=0, columnspan=2, padx=TopButton.pad_x, pady=TopButton.pad_y, sticky='w')
         back_button.config(bg=TopButton.bg, fg=TopButton.fg, width=TopButton.width, height=TopButton.height)
 
-        labelhead = tk.Label(self, text="George's Chinese Game", font=LARGE_FONT, bg=Header.bg, bd=Header.bd,
+        labelhead = tk.Label(self, text="HanLearn", font=LARGE_FONT, bg=Header.bg, bd=Header.bd,
                              relief=Header.relief, fg=Header.fg)
         labelhead.grid(row=1, columnspan=4, padx=Header.pad_x, pady=Header.pad_y)
         labelhead.config(height=Header.height, width=Header.width)
@@ -217,7 +217,7 @@ class ExpPage(tk.Frame):
         label = tk.Label(self, text=('''
                              
         
-        George's Chinese Game will randomly select a set of Chinese words from your word bank. It will then randomly display either the character, pinyin or meaning of that word and ask you to write either of the two remaining categories. 
+        HanLearn will randomly select a set of Chinese words from your word bank. It will then randomly display either the character, pinyin or meaning of that word and ask you to write either of the two remaining categories. 
         
         If you are correct, the game will move onto another word until all permutations of each word have been exhausted. 
         
@@ -259,7 +259,7 @@ class StartPage(tk.Frame):
         back_button.grid(row=0, column=0, columnspan=2, padx=TopButton.pad_x, pady=TopButton.pad_y, sticky='w')
         back_button.config(bg=TopButton.bg, fg=TopButton.fg, width=TopButton.width, height=TopButton.height)
 
-        labelhead = tk.Label(self, text="George's Chinese Game", font=LARGE_FONT, bg=Header.bg, bd=Header.bd,
+        labelhead = tk.Label(self, text="HanLearn", font=LARGE_FONT, bg=Header.bg, bd=Header.bd,
                              relief=Header.relief, fg=Header.fg)
         labelhead.grid(row=1, columnspan=4, padx=Header.pad_x, pady=Header.pad_y)
         labelhead.config(height=Header.height, width=Header.width)
