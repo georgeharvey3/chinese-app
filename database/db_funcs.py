@@ -5,7 +5,8 @@ Created on Tue Apr  7 18:03:42 2020
 @author: George
 """
 
-from database.mySQL_funcs import create_connection, create_cursor
+from database.mySQL_funcs import create_cursor
+import os
 
              
 def search_by_char(char, char_set='simp'):
@@ -183,6 +184,9 @@ def clear_table(name):
 
 
 if __name__ == '__main__':
-    file_path = r"..\data\chinese_dict.db"
+    file_path = "..\\data\\chinese_dict.db"
 else:
-    file_path = r"data\chinese_dict.db"
+    if 'chinese_repo' in os.getcwd():
+        file_path = "data\\chinese_dict.db"
+    else:
+        file_path = os.getcwd() + "\\chinese_repo\\data\\chinese_dict.db"
