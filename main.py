@@ -1191,9 +1191,9 @@ class SettingsPage(tk.Frame):
 app = ChineseApp()
 
 if os.getcwd() != os.path.dirname(os.path.abspath(__file__)):
-    icon_path = os.getcwd() + "\\chinese_repo\\images\\zw2ico.ico"
+    icon_path = os.getcwd() + "\\chinese_repo\\images\\hl.ico"
 else:
-    icon_path = "images\\zw2ico.ico"
+    icon_path = "images\\hl.ico"
 
 app.iconbitmap(icon_path)
 
